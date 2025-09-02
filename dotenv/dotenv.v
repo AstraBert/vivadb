@@ -2,6 +2,9 @@ module dotenv
 
 import os
 
+pub const prod_connection_dotenv = ".vivadb/.env"
+pub const dev_connection_dotenv = ".vivadb/.env.local"
+
 pub fn load_dotenv(dotenv_path string) ?map[string]string {
 	lines := os.read_lines(dotenv_path) or { [] }
 	if lines.len == 0 {
@@ -33,5 +36,14 @@ pub fn load_dotenv(dotenv_path string) ?map[string]string {
 			}
 		}
 		return dotenv_args
+	}
+}
+
+pub fn write_connection_dotenv(host string, port int, user string, dbname string, password string, production bool) ! {
+	dot_env_content := 'PG_PORT=${port}\nPG_USER=${user}\nPG_HOST=${host}\nPG_DBNAME=${dbname}\nPG_PASSWORD=${password}'	
+	if production {
+		os.write_file(prod_connection_dotenv, dot_env_content)!
+	} else {
+		os.write_file(dev_connection_dotenv, dot_env_content)!
 	}
 }

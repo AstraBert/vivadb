@@ -18,7 +18,11 @@ bin/
 
 # ENV
 .env
+.env.local
 
 # vweb and database
 *.db
 *.js
+
+# docker compose
+.vivadb/compose.yaml
