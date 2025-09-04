@@ -4,6 +4,7 @@ import os
 import dotenv
 
 const schema = '--- Welcome to your schema file. Here, you can define the tables of your database, as well as several migration details.
+--- In order for the file to work, it has to be named schema.v.sql
 
 -- schema_name: users_db
 -- schema_description: a database for tracking users

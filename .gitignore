@@ -26,3 +26,6 @@ bin/
 
 # docker compose
 .vivadb/compose.yaml
+
+# migrations
+migrations/
