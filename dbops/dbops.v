@@ -27,7 +27,7 @@ fn check_query(query string) bool {
 	return unsafe_keywords.any(query.to_lower().contains(it))
 }
 
-pub fn execute_query(query string, production bool, safe_exec bool) ![]pg.Row {
+pub fn execute_query(query string, production bool, safe_exec bool) !string {
 	if safe_exec {
 		if check_query(query) {
 			println("You might be running an unsafe query. Turn off safe execution to execute anyway.")
@@ -56,7 +56,24 @@ pub fn execute_query(query string, production bool, safe_exec bool) ![]pg.Row {
 		db.close() or {panic("unable to close database connection")}
 	}
 
-	retval := db.exec(query)!
+	rows := db.exec(query)!
 
-	return retval
+	mut data := ""
+	for row in rows {
+		if row.vals.len > 0 {
+			mut row_string := ""
+			for val in row.vals {
+				str_val := val or {""}
+				if str_val.len > 0 {
+					row_string += str_val + ","
+				}
+			}
+			// Remove the last comma and add newline
+			if row_string.len > 0 {
+				row_string = row_string[..row_string.len-1] + "\n"
+			}
+			data += row_string
+		}
+	}
+	return data
 }

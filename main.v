@@ -5,6 +5,7 @@ import os
 import readline
 import dotenv
 import dbops
+import new_cmd
 
 struct Config {
 	show_help bool @[long: help; short: h; xdoc: 'Show help message']
@@ -26,6 +27,19 @@ struct ConfigExec {
 	safe bool @[long: safe; short: s; xdoc: 'Execute only safe queries']
 	query string @[long: query; short: q; xdoc: 'SQL query to execute']
 	production    bool   @[long: prod; short: p; xdoc: 'Whether or not you are running this query in a production environment']
+}
+
+struct ConfigNew {
+	show_help      bool   @[long: help; short: h; xdoc: 'Show help message']
+	host          string @[long: host; xdoc: 'Host for the Postgres DB']
+	port          int    @[long: port; xdoc: 'Port for the Postgres DB']
+	user          string @[long: user; xdoc: 'Postgres user']
+	password_stdin bool   @[long: password_stdin; xdoc: 'Input password from standard input']
+	password      string @[long: password; xdoc: 'Password (not recommended for production use)']
+	dbname        string @[long: dbname; xdoc: 'Name of the database']
+	production    bool   @[long: prod; xdoc: 'Write to production env file']
+	project_name string @[xdoc: 'Name of the project']
+	docker bool @[xdoc: 'Create a minimal Docker compose configuration file to run a Postgres instance']
 }
 
 fn main() {
@@ -60,7 +74,7 @@ fn main() {
 			succ_str := "Successfully written your connection configuration to " + if production {dotenv.prod_connection_dotenv} else {dotenv.dev_connection_dotenv}
 			println(succ_str)
 		} else if os.args[1] == "exec" {
-			config_for_exec, _ := flag.to_struct[ConfigExec](os.args, skip: 2)! // Fixed: was ConfigSub, now ConfigConnect
+			config_for_exec, _ := flag.to_struct[ConfigExec](os.args, skip: 2)!
 			if config_for_exec.show_help {
 				println(flag.to_doc[ConfigExec](
 					description: 'exec: a production-aware command for safely executing SQL queries'
@@ -70,8 +84,39 @@ fn main() {
 			query := config_for_exec.query
 			safe_exec := config_for_exec.safe
 			production := config_for_exec.production
-			retval := dbops.execute_query(query, production, safe_exec)!
-			println("Query was successfully executed and returned: ${retval}")
+			data := dbops.execute_query(query, production, safe_exec)!
+			if data.len > 0 {
+				println(data)
+			} else {
+				println("Success! No rows returned.")
+			}
+		} else if os.args[1] == "new" {
+			config_for_new, _ := flag.to_struct[ConfigNew](os.args, skip: 2)!
+			if config_for_new.show_help {
+				println(flag.to_doc[ConfigNew](
+					description: 'new: create a new project and integrate it with vivadb immediately'
+				)!)
+				exit(0)
+			}
+			// Declare password variable properly
+			mut password := ''
+			if config_for_new.password_stdin {
+				mut r := readline.Readline{}
+				password = r.read_line('Your password here: ')!
+			} else {
+				println("WARNING\tIt is not advisable to provide the password through CLI. Use --password-stdin to input it from standard input")
+				password = config_for_new.password
+			}
+			
+			host := config_for_new.host
+			port := config_for_new.port
+			user := config_for_new.user
+			dbname := config_for_new.dbname
+			production := config_for_new.production
+			project_name := config_for_new.project_name
+			use_docker := config_for_new.docker
+			
+			new_cmd.create_new_project(host, port, user, dbname, password, production, project_name, use_docker)!
 		}
 	}
 

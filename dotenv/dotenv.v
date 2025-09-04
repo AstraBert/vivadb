@@ -41,6 +41,9 @@ pub fn load_dotenv(dotenv_path string) ?map[string]string {
 
 pub fn write_connection_dotenv(host string, port int, user string, dbname string, password string, production bool) ! {
 	dot_env_content := 'PG_PORT=${port}\nPG_USER=${user}\nPG_HOST=${host}\nPG_DBNAME=${dbname}\nPG_PASSWORD=${password}'	
+	if !os.exists(".vivadb/") {
+		os.mkdir_all(".vivadb/")!
+	}
 	if production {
 		os.write_file(prod_connection_dotenv, dot_env_content)!
 	} else {
