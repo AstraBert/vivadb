@@ -23,7 +23,7 @@ module migrate_cmd
 // fn test_read_migration_file() {
 // 	wd := os.getwd()
 // 	os.chdir("test_data/correct_schema")!
-// 	migr_dets, schema := read_migration_file()!
+// 	migr_dets, schema := read_migration_file(?string(none))!
 // 	assert migr_dets.version == "0.1.0", "Version is not correct, actual version is: ${migr_dets.version}"
 // 	assert migr_dets.name == "users", "Schema Name is not correct, actual version is: ${migr_dets.name}"
 // 	assert migr_dets.description == "a database to track users", "Schema Description is not correct, actual version is: ${migr_dets.description}"
@@ -47,8 +47,7 @@ module migrate_cmd
 // 	mut v := ""
 // 	for path in paths {
 // 		os.chdir(wd)!
-// 		os.chdir("test_data/wrong_schema/${path}")!
-// 		read_migration_file() or {v = "ERROR while reading ${path}/schema.v.sql"}
+// 		read_migration_file("test_data/wrong_schema/${path}") or {v = "ERROR while reading ${path}/schema.v.sql"}
 // 		assert v == "ERROR while reading ${path}/schema.v.sql", "No error occurred!"
 // 	}
 // }

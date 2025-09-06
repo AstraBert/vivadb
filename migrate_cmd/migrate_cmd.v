@@ -2,6 +2,7 @@ module migrate_cmd
 
 import dbops
 import json
+import encoding.csv
 import os
 
 pub const migration_directory_prod = ".vivadb/migrations/prod"
@@ -36,9 +37,13 @@ pub fn create_migration_directory(version string, name string, description strin
 	println("Successfully created your migration directory. Find information at: ${full_path}/migration.json")
 }
 
-pub fn read_migration_file() !(MigrationDetails, map[string]string) {
-	content := os.read_file(migration_file_path)!
-	lines := os.read_lines(migration_file_path)!
+pub fn read_migration_file(base_dir ?string) !(MigrationDetails, map[string]string) {
+	mut migration_fl_dir := base_dir or {""}
+	if migration_fl_dir != "" {
+		migration_fl_dir = migration_fl_dir + "/" 
+	}
+	content := os.read_file(migration_fl_dir + migration_file_path)!
+	lines := os.read_lines(migration_fl_dir + migration_file_path)!
 	mut migr_dets := MigrationDetails{}
 	for line in lines {
 		if line.contains("---") && line.contains("version:") {
@@ -90,6 +95,24 @@ fn register_migration(production bool, version string) ! {
 	_ := dbops.execute_query("INSERT INTO _vivadb_migrations (version, production) VALUES ('${version}', ${prod_val})", false, false)!
 }
 
+fn get_latest_migration(production bool, current_version string) !string {
+	data := dbops.execute_query("SELECT * FROM _vivadb_migrations ORDER BY applied_at;", false, false)!
+	mut parser := csv.new_reader(data)
+	mut values := [][]string{}
+	for {
+		items := parser.read() or { break }
+		values << items
+	}
+	last_versions := values.filter(current_version !in it)
+	last_version := last_versions[last_versions.len-1][0]
+	prod := last_versions[last_version.len-1][1] != "f"
+	if prod {
+		return migration_directory_prod + "/" + last_version
+	} else {
+		return migration_directory_dev + "/" + last_version
+	}
+}
+
 fn table_exists(table_name string) !bool {
 	retval := dbops.execute_query("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = '${table_name}')", false, false)!
 	return retval.trim_space().replace("\n", "") == "t"
@@ -114,18 +137,62 @@ fn get_table_columns(table_def string) ![]DatabaseColumn {
 	return table_cols
 }
 
-fn update_table(table_name string, table_def string) ! {
-	println(table_name)
-	println(get_table_columns(table_def) or {[]})
+fn get_old_table_def(table_name string, current_version string, production bool) !string {
+	path := get_latest_migration(production, current_version)!
+	_, schema := read_migration_file(path)!
+	if table_name in schema {
+		return schema[table_name]
+	} else {
+		return error("Table ${table_name} does not seem to exist in older versions...")
+	}
+}
+
+fn get_col_names(cols []DatabaseColumn) []string {
+	mut names := []string{}
+	for col in cols {
+		names << col.name
+	}
+	return names
+}
+
+fn update_table(table_name string, table_def string, current_version string, production bool) ! {
+	old_table_def := get_old_table_def(table_name, current_version, production)!
+	old_cols_def := get_table_columns(old_table_def)!
+	new_cols_def := get_table_columns(table_def)!
+	if new_cols_def.len > old_cols_def.len {
+		added_cols := new_cols_def.filter(it.name !in get_col_names(old_cols_def))
+		for col in added_cols {
+			dbops.execute_query("ALTER TABLE ${table_name} ADD COLUMN ${col.name} ${col.data_type} ${col.constraints}", false, false)!
+		}
+	} else if new_cols_def.len < old_cols_def.len {
+		dropped_cols := old_cols_def.filter(it.name !in get_col_names(new_cols_def))
+		for col in dropped_cols {
+			dbops.execute_query("ALTER TABLE ${table_name} DROP COLUMN ${col.name}", false, false)!
+		}
+	} else {
+		if get_col_names(old_cols_def).all(it in get_col_names(new_cols_def)) {
+			for i in 0 .. new_cols_def.len {
+				if new_cols_def[i].constraints != old_cols_def[i].constraints {
+					dbops.execute_query("ALTER TABLE ${table_name} ADD CONSTRAINT ${table_name}_${new_cols_def[i].name}_${i} ${new_cols_def[i].constraints} (${new_cols_def[i].name});", false, false)!
+				}
+				if new_cols_def[i].data_type != old_cols_def[i].data_type {
+					dbops.execute_query("ALTER TABLE ${table_name} ALTER COLUMN ${new_cols_def[i].name} TYPE ${new_cols_def[i].data_type};", false, false)!
+				}
+			}
+		} else {
+			println("You are screwed... for now")
+		}
+	}
 }
 
 pub fn migrate(production bool) ! {
-	migr_dets, schema := read_migration_file()!
+	migr_dets, schema := read_migration_file(?string(none))!
 	create_migration_directory(migr_dets.version, migr_dets.name, migr_dets.description, production)!
 	register_migration(production, migr_dets.version)!
 	for key in schema.keys() {
 		if table_exists(key) or {false} {
-			update_table(key, schema[key])!
+			update_table(key, schema[key], migr_dets.version, production)!
+			println("Table ${key} successfully updated")
 		} else {
 			create_table(key, schema[key])!
 			println("Table ${key} successfully created")
