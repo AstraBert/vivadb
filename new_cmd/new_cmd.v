@@ -15,7 +15,7 @@ const schema = '--- Welcome to your schema file. Here, you can define the tables
 --- Use the `TABLE` keyword to define a table
 TABLE users (
     --- Use SQL syntax to define the fields of a table
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    id BIGSERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
@@ -62,7 +62,7 @@ Here is an example:
 --- schema_description: track user sign-ups
 
 TABLE users (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    id BIGSERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
