@@ -16,7 +16,7 @@ jobs:
           fetch-depth: 1
 
       - name: Install v
-        run:  cd && git clone --depth=1 https://github.com/vlang/v && cd v && make && ./v symlink
+        run: cd && git clone --depth=1 https://github.com/vlang/v && cd v && make && ./v symlink
 
       - name: Test dbops
         run: v ./dbops/dbops_test.v
@@ -26,6 +26,6 @@ jobs:
 
       - name: Test migrate
         run: v ./migrate_cmd/migrate_cmd_test.v
-    
+
       - name: Test new
         run: v ./new_cmd/new_cmd_test.v

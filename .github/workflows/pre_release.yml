@@ -1,4 +1,4 @@
-name: Build
+name: Pre-Release
 
 on:
   push:
@@ -30,6 +30,6 @@ jobs:
           tag: ${{ github.ref_name }}
           name: ${{ github.ref_name }} - VivaDB Pre-Release
           artifacts: "vivadb*"
-          generateReleaseNotes: true
+          generateReleaseNotes: false
           draft: false
           prerelease: true
