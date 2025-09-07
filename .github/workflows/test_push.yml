@@ -1,0 +1,33 @@
+name: Test - Push to Main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test_push:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Install v
+        run:  cd && git clone --depth=1 https://github.com/vlang/v && cd v && make && ./v symlink
+
+      - name: Test dbops
+        run: v ./dbops/dbops_test.v
+
+      - name: Test dotenv
+        run: v ./dotenv/dotenv_test.v
+
+      - name: Test migrate
+        run: v ./migrate_cmd/migrate_cmd_test.v
+    
+      - name: Test new
+        run: v ./new_cmd/new_cmd_test.v
