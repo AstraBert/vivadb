@@ -71,46 +71,49 @@ TABLE users (
 );
 ```'
 
-const gitignore_content := '
+const gitignore_content = '
 # env files
 .env
 .env.local
 '
 
 fn write_schema_file() ! {
-	os.write_file("schema.v.sql", schema)!
+	os.write_file('schema.v.sql', schema)!
 }
 
 fn write_docker_compose() ! {
-	os.write_file(".vivadb/compose.yaml", docker_compose)!
+	os.write_file('.vivadb/compose.yaml', docker_compose)!
 }
 
 fn write_readme_file(project_name string) ! {
-  os.write_file("README.md", "# ${project_name}\n\n" + readme_content)!
+	os.write_file('README.md', '# ${project_name}\n\n' + readme_content)!
 }
 
 fn write_gitignore_file() ! {
-  os.write_file(".gitignore", gitignore_content)!
+	os.write_file('.gitignore', gitignore_content)!
 }
 
 pub fn create_new_project(host string, port int, user string, dbname string, password string, production bool, project_name string, use_docker bool) ! {
-	if os.exists("./"+project_name) {
-		os.chdir("./"+project_name)!
+	if os.exists('./' + project_name) {
+		os.chdir('./' + project_name)!
 	} else {
-		os.mkdir_all("./"+project_name, os.MkdirParams{})!
-		os.chdir("./"+project_name)!
+		os.mkdir_all('./' + project_name, os.MkdirParams{})!
+		os.chdir('./' + project_name)!
 	}
-	dotenv.write_connection_dotenv(host, port, user, dbname, password, production) or {panic("unable to write .env")}
-	succ_str := "Successfully written your connection configuration to " + if production {dotenv.prod_connection_dotenv} else {dotenv.dev_connection_dotenv}
+	dotenv.write_connection_dotenv(host, port, user, dbname, password, production) or {
+		panic('unable to write .env')
+	}
+	succ_str := 'Successfully written your connection configuration to ' +
+		if production { dotenv.prod_connection_dotenv } else { dotenv.dev_connection_dotenv }
 	println(succ_str)
-  write_readme_file(project_name)!
-  println("Successfully written README file to README.md")
+	write_readme_file(project_name)!
+	println('Successfully written README file to README.md')
 	write_schema_file()!
-	println("Successfully written an example schema file to schema.v.sql")
-  write_gitignore_file()!
+	println('Successfully written an example schema file to schema.v.sql')
+	write_gitignore_file()!
 	if use_docker {
 		write_docker_compose()!
-		println("Successfully written an example Docker compose config file to .vivadb/compose.yaml")
+		println('Successfully written an example Docker compose config file to .vivadb/compose.yaml')
 	}
-	println("Your new project has been successfully configured!")
+	println('Your new project has been successfully configured!')
 }

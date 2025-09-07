@@ -16,19 +16,19 @@ jobs:
           fetch-depth: 1
 
       - name: Install v
-        run:  cd && git clone --depth=1 https://github.com/vlang/v && cd v && make && ./v symlink
+        run: cd && git clone --depth=1 https://github.com/vlang/v && cd v && make && ./v symlink
 
       - name: Build
         run: v .
 
       - name: Create GitHub Pre-Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: ncipollo/release-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ github.ref_name }}
-          release_name: ${{ github.ref_name }} - VivaDB Pre-Release
+          tag: ${{ github.ref_name }}
+          name: ${{ github.ref_name }} - VivaDB Pre-Release
           artifacts: "vivadb*"
           generateReleaseNotes: true
           draft: false
