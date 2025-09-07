@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 1
 
       - name: Install v
-        uses:  cd && git clone --depth=1 https://github.com/vlang/v && cd v && make && ./v symlink
+        run:  cd && git clone --depth=1 https://github.com/vlang/v && cd v && make && ./v symlink
 
       - name: Build
         run: v .
