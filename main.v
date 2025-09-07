@@ -59,7 +59,7 @@ fn main() {
 				)!)
 				exit(0)
 			}
-			
+
 			// Declare password variable properly
 			mut password := ''
 			if config_for_connect.password_stdin {
@@ -69,13 +69,13 @@ fn main() {
 				println("WARNING\tIt is not advisable to provide the password through CLI. Use --password-stdin to input it from standard input")
 				password = config_for_connect.password
 			}
-			
+
 			host := config_for_connect.host
 			port := config_for_connect.port
 			user := config_for_connect.user
 			dbname := config_for_connect.dbname
 			production := config_for_connect.production
-			
+
 			dotenv.write_connection_dotenv(host, port, user, dbname, password, production) or {panic("unable to write .env")}
 			succ_str := "Successfully written your connection configuration to " + if production {dotenv.prod_connection_dotenv} else {dotenv.dev_connection_dotenv}
 			println(succ_str)
@@ -113,7 +113,7 @@ fn main() {
 				println("WARNING\tIt is not advisable to provide the password through CLI. Use --password-stdin to input it from standard input")
 				password = config_for_new.password
 			}
-			
+
 			host := config_for_new.host
 			port := config_for_new.port
 			user := config_for_new.user
@@ -121,7 +121,7 @@ fn main() {
 			production := config_for_new.production
 			project_name := config_for_new.project_name
 			use_docker := config_for_new.docker
-			
+
 			new_cmd.create_new_project(host, port, user, dbname, password, production, project_name, use_docker)!
 		} else if os.args[1] == "migrate" {
 			config_for_migrate, _ := flag.to_struct[ConfigMigrate](os.args, skip: 2)!
