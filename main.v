@@ -6,6 +6,7 @@ import readline
 import dotenv
 import dbops
 import new_cmd
+import migrate_cmd
 
 struct Config {
 	show_help bool @[long: help; short: h; xdoc: 'Show help message']
@@ -40,6 +41,11 @@ struct ConfigNew {
 	production    bool   @[long: prod; xdoc: 'Write to production env file']
 	project_name string @[xdoc: 'Name of the project']
 	docker bool @[xdoc: 'Create a minimal Docker compose configuration file to run a Postgres instance']
+}
+
+struct ConfigMigrate {
+	show_help      bool   @[long: help; short: h; xdoc: 'Show help message']
+	production    bool   @[long: prod; xdoc: 'Whether or not the migration is happening in a production environment']
 }
 
 fn main() {
@@ -117,6 +123,17 @@ fn main() {
 			use_docker := config_for_new.docker
 			
 			new_cmd.create_new_project(host, port, user, dbname, password, production, project_name, use_docker)!
+		} else if os.args[1] == "migrate" {
+			config_for_migrate, _ := flag.to_struct[ConfigMigrate](os.args, skip: 2)!
+			if config_for_migrate.show_help {
+				println(flag.to_doc[ConfigMigrate](
+					description: 'migrate: update your database effortlessly, in a production-aware way.'
+				)!)
+				exit(0)
+			}
+
+			production := config_for_migrate.production
+			migrate_cmd.migrate(production)!
 		}
 	}
 

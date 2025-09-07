@@ -40,8 +40,8 @@ pub fn execute_query(query string, production bool, safe_exec bool) !string {
 		keywords_to_check << ["create", "grant", "revoke", "set", "show"]
 		if keywords_to_check.any(query.to_lower().contains(it)) {
 			mut r := readline.Readline{}
-			approval := r.read_line('You might be running an unsafe query in a production environment. Are you sure you want to continue? [yes/no]')!
-			if approval != "yes" {
+			approval := r.read_line('You might be running an unsafe query in a production environment. Are you sure you want to continue? [yes/no] ')!
+			if approval.to_lower().trim_space() != "yes" {
 				println("Exiting...")
 				exit(0)
 			}
