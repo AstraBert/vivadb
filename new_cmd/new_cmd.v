@@ -21,6 +21,7 @@ TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );'
+
 const docker_compose = 'services:
   postgres:
     image: postgres
@@ -70,6 +71,12 @@ TABLE users (
 );
 ```'
 
+const gitignore_content := '
+# env files
+.env
+.env.local
+'
+
 fn write_schema_file() ! {
 	os.write_file("schema.v.sql", schema)!
 }
@@ -80,6 +87,10 @@ fn write_docker_compose() ! {
 
 fn write_readme_file(project_name string) ! {
   os.write_file("README.md", "# ${project_name}\n\n" + readme_content)!
+}
+
+fn write_gitignore_file() ! {
+  os.write_file(".gitignore", gitignore_content)!
 }
 
 pub fn create_new_project(host string, port int, user string, dbname string, password string, production bool, project_name string, use_docker bool) ! {
@@ -96,6 +107,7 @@ pub fn create_new_project(host string, port int, user string, dbname string, pas
   println("Successfully written README file to README.md")
 	write_schema_file()!
 	println("Successfully written an example schema file to schema.v.sql")
+  write_gitignore_file()!
 	if use_docker {
 		write_docker_compose()!
 		println("Successfully written an example Docker compose config file to .vivadb/compose.yaml")
