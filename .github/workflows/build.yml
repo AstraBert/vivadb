@@ -2,8 +2,7 @@ name: Build
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
 
 jobs:
@@ -11,15 +10,28 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            artifact_name: vivadb-linux
+            binary_extension: ""
+          - os: macos-latest
+            artifact_name: vivadb-macos
+            binary_extension: ""
 
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - name: Install v
-        run: cd && git clone --depth=1 https://github.com/vlang/v && cd v && make && ./v symlink
+      - name: Install V (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          cd $HOME
+          git clone --depth=1 https://github.com/vlang/v
+          cd v
+          make
+          ./v symlink
 
-      - name: Build
-        run: v .
+      - name: Build binary
+        run: v -o ${{ matrix.artifact_name }}${{ matrix.binary_extension }} .
