@@ -12,10 +12,10 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            artifact_name: your-app-name-linux-amd64
+            artifact_name: vivadb-linux
             binary_extension: ""
           - os: macos-latest
-            artifact_name: your-app-name-macos-amd64
+            artifact_name: vivadb-macos
             binary_extension: ""
 
     steps:
