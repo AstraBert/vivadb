@@ -1,9 +1,8 @@
-name: Build
+name: GitHub Release
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
 
 jobs:
@@ -11,15 +10,39 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            artifact_name: your-app-name-linux-amd64
+            binary_extension: ""
+          - os: macos-latest
+            artifact_name: your-app-name-macos-amd64
+            binary_extension: ""
+          - os: windows-latest
+            artifact_name: your-app-name-windows-amd64
+            binary_extension: ".exe"
 
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - name: Install v
-        run: cd && git clone --depth=1 https://github.com/vlang/v && cd v && make && ./v symlink
+      - name: Install V (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          cd $HOME
+          git clone --depth=1 https://github.com/vlang/v
+          cd v
+          make
+          ./v symlink
 
-      - name: Build
-        run: v .
+      - name: Install V (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          git clone --depth=1 https://github.com/vlang/v $env:USERPROFILE\v
+          cd $env:USERPROFILE\v
+          .\make.bat
+          .\v.exe symlink
+
+      - name: Build binary
+        run: v -prod -o ${{ matrix.artifact_name }}${{ matrix.binary_extension }} .
