@@ -137,9 +137,30 @@ fn main() {
 	config, _ := flag.to_struct[Config](os.args, skip: 1)!
 
 	if config.show_help {
-		println(flag.to_doc[Config](
-			description: 'vivadb: a next generation Postgres DB manager'
-		)!)
+		help_message := '
+vivadb: a next generation Postgres DB manager
+
+USAGE:
+	vivadb [OPTIONS] [SUBCOMMAND]
+
+OPTIONS:
+	-h, --help    Show this help message
+
+SUBCOMMANDS:
+	config        Configure connection to a Postgres database
+	exec          Execute SQL queries in a production-aware manner
+	new           Create a new project and integrate it with vivadb
+	migrate       Update your database schema effortlessly
+
+Use "vivadb <subcommand> --help" for more information about a specific subcommand.
+
+EXAMPLES:
+	vivadb config --host=localhost --port=5432 --user=user --dbname=mydb --password-stdin
+	vivadb exec --query="SELECT * FROM users;" --safe
+	vivadb new --project-name=my_app --docker --host=localhost --port=5432 --user=user --dbname=mydb --password-stdin
+	vivadb migrate --prod
+'
+		println(help_message)
 		exit(0)
 	}
 }
