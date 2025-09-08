@@ -2,7 +2,6 @@ module main
 
 import flag
 import os
-import readline
 import dotenv
 import dbops
 import new_cmd
@@ -63,8 +62,7 @@ fn main() {
 			// Declare password variable properly
 			mut password := ''
 			if config_for_connect.password_stdin {
-				mut r := readline.Readline{}
-				password = r.read_line('Your password here: ')!
+				password = os.input_password('Your password here: ')!
 			} else {
 				println("WARNING\tIt is not advisable to provide the password through CLI. Use --password-stdin to input it from standard input")
 				password = config_for_connect.password
@@ -107,8 +105,7 @@ fn main() {
 			// Declare password variable properly
 			mut password := ''
 			if config_for_new.password_stdin {
-				mut r := readline.Readline{}
-				password = r.read_line('Your password here: ')!
+				password = os.input_password('Your password here: ')!
 			} else {
 				println("WARNING\tIt is not advisable to provide the password through CLI. Use --password-stdin to input it from standard input")
 				password = config_for_new.password
@@ -119,7 +116,7 @@ fn main() {
 			user := config_for_new.user
 			dbname := config_for_new.dbname
 			production := config_for_new.production
-			project_name := config_for_new.project_name
+			project_name := config_for_new.project_name.trim_space().replace(" ", "_")
 			use_docker := config_for_new.docker
 
 			new_cmd.create_new_project(host, port, user, dbname, password, production, project_name, use_docker)!
