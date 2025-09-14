@@ -98,7 +98,7 @@ vivadb exec --query="UPDATE users SET status = 'active' WHERE created_at > '2024
 Create a new project with database integration and optional Docker setup.
 
 ```bash
-vivadb new [PROJECT_NAME] [OPTIONS]
+vivadb new [OPTIONS]
 ```
 
 **Options:**
