@@ -1,0 +1,33 @@
+name: GitHub Release
+
+on:
+  push:
+    tags:
+      - "vivadb-py@v*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Build
+        working-directory: py
+        run: uv build
+
+      - name: Publish to PyPI
+        working-directory: py
+        run: uv publish --token ${{ secrets.PYPI_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "py/dist/*"
+          generateReleaseNotes: true

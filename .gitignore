@@ -36,3 +36,4 @@ dist/
 build/
 *_cache/
 __pycache__/
+.python-version
