@@ -1,4 +1,4 @@
-name: Test - Push to Main
+name: CI Tests V - Push to Main
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  test_push:
+  test_v_push:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

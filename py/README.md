@@ -1,49 +1,18 @@
-# vivadb
+# vivadb-py
 
-A next generation Postgres database manager built with V.
-
-## Overview
-
-vivadb is a command-line tool designed to streamline PostgreSQL database management with production-aware features, safe query execution, and project scaffolding capabilities.
-
-## Features
-
-- **Production-aware operations**: Separate configuration and execution modes for development and production environments
-- **Safe query execution**: Built-in safety checks for SQL queries
-- **Project scaffolding**: Create new projects with database integration
-- **Database migrations**: Effortless schema updates
-- **Docker integration**: Optional Docker Compose setup for local PostgreSQL instances
-- **Secure password handling**: Support for stdin password input to avoid exposing credentials in command history
+A python wrapper around [vivadb](https://github.com/AstraBert/vivadb).
 
 ## Installation
 
-If you have [v](https://vlang.io) installed, you can clone the repository and compile the code directly:
-
-```bash
-# Clone the repository
-git clone https://github.com/AstraBert/vivadb
-cd vivadb
-
-# Build with V
-v -o vivadb .
-```
-
-You can also download the executable directly from the [Releases Page](https://github.com/AstraBert/vivadb/releases) or use the command line to do it:
-
-```bash
-curl -L -o vivadb https://github.com/AstraBert/vivadb/releases/download/<version>/vivadb-<os> ## e.g. https://github.com/AstraBert/vivadb/releases/download/0.1.1/vivadb-linux
-
-# make sure the downloaded binary is executable
-chmod +x vivadb
-```
-
-You can also install `vivadb` bundled with python, using `pip` or your favorite package manager:
+Install through `pip` (or your favorite dependency manager):
 
 ```bash
 pip install vivadb-py
 ```
 
 ## Commands
+
+The package comes bundled with the `vivadb` executable and has all its subcommands.
 
 ### `config` - Database Configuration
 
@@ -188,11 +157,11 @@ Here is how a project would look like:
 
 ## Contributing
 
-Contributions are more than welcome! Find the contribution guidelines [here](./CONTRIBUTING.md)
+Contributions are more than welcome! Find the contribution guidelines [here](https://github.com/AstraBert/vivadb/blob/main/CONTRIBUTING.md)
 
 ## License
 
-This project is distributed under an [MIT License](./LICENSE)
+This project is distributed under an [MIT License](https://github.com/AstraBert/vivadb/blob/main/LICENSE)
 
 ## Support
 

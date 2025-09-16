@@ -1,4 +1,4 @@
-name: Build
+name: Build V Binary
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  build_v:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
