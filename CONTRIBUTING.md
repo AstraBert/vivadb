@@ -27,6 +27,8 @@ Thank you for your interest in contributing to this project! Please review these
 
 ### How to Contribute
 
+**vivadb core**
+
 1. **Fork the repository**
 
 2. **Set up pre-commit hooks**
@@ -52,6 +54,30 @@ Thank you for your interest in contributing to this project! Please review these
 
 6. **Submit a pull request**
    Include a comprehensive description of your changes.
+
+**vivadb-py**
+
+Most of the contribution steps are the same across vivadb core and vivadb-py.
+
+The python package is organized as a [uv](https://docs.astral.sh/uv/) project, so you will first need to set up a virtual environment in the `py/` directory, by running:
+
+```bash
+uv sync
+```
+
+And then, after you made changes and (if needed) added tests, you can run all the tests with:
+
+```bash
+pytest tests/
+```
+
+And build the package with:
+
+```bash
+uv build
+```
+
+Ensure package build, tests and linting pass before pushing your commits and opening a PR.
 
 ---
 

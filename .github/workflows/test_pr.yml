@@ -1,10 +1,10 @@
-name: Test - PR
+name: CI Tests V - PR
 
 on:
   pull_request:
 
 jobs:
-  test_pr:
+  test_v_pr:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

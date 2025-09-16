@@ -37,6 +37,12 @@ curl -L -o vivadb https://github.com/AstraBert/vivadb/releases/download/<version
 chmod +x vivadb
 ```
 
+You can also install `vivadb` bundled with python, using `pip` or your favorite package manager:
+
+```bash
+pip install vivadb-py
+```
+
 ## Commands
 
 ### `config` - Database Configuration

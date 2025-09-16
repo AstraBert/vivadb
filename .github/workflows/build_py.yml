@@ -1,4 +1,4 @@
-name: Build Package
+name: Build Python Package
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  build_py:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
