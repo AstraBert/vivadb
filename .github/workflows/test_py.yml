@@ -21,4 +21,5 @@ jobs:
           enable-cache: true
 
       - name: Run Tests
+        working-directory: py
         run: uv run -- pytest tests
