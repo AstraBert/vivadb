@@ -8,7 +8,7 @@ import stat
 
 from pathlib import Path
 
-__version__ = "v0.1.0-alpha"
+__version__ = "v0.1.1-alpha"
 _download_path = Path(__file__).resolve().parents[0]
 
 async def _download_binary() -> None:

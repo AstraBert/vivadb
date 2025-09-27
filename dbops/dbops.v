@@ -38,8 +38,9 @@ pub fn execute_query(query string, production bool, safe_exec bool) !string {
 
 	if production {
 		mut keywords_to_check := unsafe_keywords.clone()
-		keywords_to_check << ['create', 'grant', 'revoke', 'set', 'show']
-		if keywords_to_check.any(query.to_lower().contains(it)) {
+		keywords_to_check << ['create', 'grant', 'revoke', 'set', 'show', 'select *']
+		if keywords_to_check.any(query.to_lower().contains(it))
+			|| (query.to_lower().contains('select') && !query.to_lower().contains('limit')) {
 			mut r := readline.Readline{}
 			approval := r.read_line('You might be running an unsafe query in a production environment. Are you sure you want to continue? [yes/no] ')!
 			if approval.to_lower().trim_space() != 'yes' {
